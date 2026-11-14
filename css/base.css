@@ -1,0 +1,21 @@
+/* Variables, tipografía y normalización */
+
+:root{--bg:#f5f7fa;--surface:#fff;--surface2:#f9fbfc;--ink:#17233a;--muted:#607087;--line:#dfe6ef;--blue:#3566bb;--blueBg:#edf3fc;--teal:#058775;--tealBg:#e8f7f2;--red:#c34351;--redBg:#fff0f1;--gold:#ac711f;--shadow:0 10px 35px rgba(27,47,75,.045);--radius:16px}
+
+*{box-sizing:border-box}
+
+html{scroll-behavior:smooth}
+
+body{margin:0;font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--ink)}
+
+button,input,select{font:inherit}
+
+button{cursor:pointer}
+
+button:disabled{cursor:not-allowed;opacity:.5}
+
+input[type=number]{font-variant-numeric:tabular-nums;appearance:textfield;-moz-appearance:textfield}
+
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+
+:focus-visible{outline:3px solid #86b4ff;outline-offset:2px}
