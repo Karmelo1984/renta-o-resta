@@ -1,4 +1,6 @@
-# Simulador de ahorro y apalancamiento · 6 escenarios
+# Simulador de ahorro y apalancamiento
+
+Herramienta de simulación financiera que compara **tres escenarios** de ahorro en un número variable de cuentas remuneradas configurables, con aportaciones propias y un préstamo.
 
 Aplicación web estática para PC o móvil, **sin servidor, sin dependencias npm y sin servicios externos**. Mantiene HTML, CSS y JavaScript separados, con un motor financiero independiente de la interfaz.
 
@@ -6,37 +8,42 @@ Aplicación web estática para PC o móvil, **sin servidor, sin dependencias npm
 
 1. Descomprime `simulador-ahorro-apalancamiento-6-escenarios.zip`.
 2. Abre `simulador-ahorro-apalancamiento/index.html` en Chrome, Edge, Firefox o Safari.
-3. Modifica los importes o el plazo y consulta las seis simulaciones. Las cifras se recalculan automáticamente.
+3. Modifica los importes o el plazo y consulta los resultados de cada escenario y cuenta. Las cifras se recalculan automáticamente.
 
 **Nota para iPhone:** las vistas previas de Archivos pueden no ejecutar los scripts. Si necesitas utilizarlo desde Safari, publica la carpeta como sitio estático en GitHub Pages, GitLab Pages u otro alojamiento web. En PC se puede abrir directamente por `file://`.
 
 ## Escenarios
 
-| Escenario | Capital inicial | Préstamo | Aporte periódico | Aporte puntual |
-|---|---:|---:|---|---|
-| A · Solo ahorro | 25.000 € | — | No | No |
-| B · Ahorro con aportaciones | 25.000 € | — | Configurable; día 1 de cada mes | Configurable; día 1 |
-| C · Ahorro financiado | 25.000 € | 50.000 € al 6 % TIN | **Igual que B**; día 1 | **Igual que B**; día 1 |
+| Escenario                   | Capital inicial |            Préstamo | Aporte periódico                | Aporte puntual         |
+| --------------------------- | --------------: | ------------------: | ------------------------------- | ---------------------- |
+| A · Solo ahorro             |        25.000 € |                   — | No                              | No                     |
+| B · Ahorro con aportaciones |        25.000 € |                   — | Configurable; día 1 de cada mes | Configurable; día 1    |
+| C · Ahorro financiado       |        25.000 € | 50.000 € al 6 % TIN | **Igual que B**; día 1          | **Igual que B**; día 1 |
 
-Ambos productos de cuenta se aplican de forma independiente a A, B y C: **3 × 2 = 6 simulaciones**.
+Cada cuenta remunerada configurada se aplica de forma independiente a A, B y C; el número de cuentas es variable.
 
-| Modalidad | TIN por defecto | Devengo | Ingreso neto | Retención por defecto |
-|---|---:|---|---|---:|
-| Cuenta mensual | 3 % | Diario | Día 1 del mes siguiente | 19 % |
-| Cuenta diaria | 2,59 % | Diario | Día siguiente | 19 % |
+- **A · Ahorro inicial:** el capital inicial genera intereses, sin aportaciones posteriores.
+- **B · Ahorro con aportaciones:** suma aportaciones periódicas y puntuales al capital inicial.
+- **C · Ahorro con préstamo:** repite las aportaciones de B, añade un préstamo y descuenta sus cuotas del saldo. El préstamo no es una aportación personal.
+- **C − B** aísla el efecto atribuible a la financiación. El saldo final no equivale necesariamente al beneficio neto (que descuenta capital inicial y aportaciones propias), y una diferencia positiva de saldo no implica por sí sola que el apalancamiento sea rentable.
+
+| Modalidad      | TIN por defecto | Devengo | Ingreso neto            | Retención por defecto |
+| -------------- | --------------: | ------- | ----------------------- | --------------------: |
+| Cuenta mensual |             3 % | Diario  | Día 1 del mes siguiente |                  19 % |
+| Cuenta diaria  |          2,59 % | Diario  | Día siguiente           |                  19 % |
 
 Todos los parámetros son editables dentro de sus límites:
 
-| Dato | Mínimo | Máximo | Botones ± |
-|---|---:|---:|---:|
-| Capital inicial | 0 € | **200.000 €** | 100 € |
-| Importe del préstamo | 0 € | **200.000 €** | 100 € |
-| Aportación periódica compartida B/C | 0 € | **50.000 €** | 100 € |
-| Cada aportación puntual compartida B/C | 0 € | **50.000 €** | 100 € |
-| TIN de las cuentas y el préstamo | 0 % | 100 % | 0,01 puntos |
-| Plazo del préstamo | 1 mes | 120 meses | 1 mes |
+| Dato                                   | Mínimo |        Máximo |   Botones ± |
+| -------------------------------------- | -----: | ------------: | ----------: |
+| Capital inicial                        |    0 € | **200.000 €** |       100 € |
+| Importe del préstamo                   |    0 € | **200.000 €** |       100 € |
+| Aportación periódica compartida B/C    |    0 € |  **50.000 €** |       100 € |
+| Cada aportación puntual compartida B/C |    0 € |  **50.000 €** |       100 € |
+| TIN de las cuentas y el préstamo       |    0 % |         100 % | 0,01 puntos |
+| Plazo del préstamo                     |  1 mes |     120 meses |       1 mes |
 
-Los límites se aplican a los deslizadores y botones, a la escritura o pegado de valores en los campos, y a la validación de escenarios importados desde JSON. Un importe superior al permitido se corrige al máximo desde la interfaz y se rechaza en una importación JSON. El plazo (N) se puede configurar **de 1 a 120 meses**. **B y C comparten exactamente las mismas aportaciones periódicas y puntuales**, sin ningún ajuste independiente en C. Por defecto ingresan 500 €/mes y no hay aportaciones puntuales. A no recibe aportaciones adicionales.
+Los límites se aplican a los deslizadores y botones, a la escritura o pegado de valores en los campos. Un importe superior al permitido se corrige al máximo. El plazo (N) se puede configurar **de 1 a 120 meses**. **B y C comparten exactamente las mismas aportaciones periódicas y puntuales**, sin ningún ajuste independiente en C. Por defecto ingresan 500 €/mes y no hay aportaciones puntuales. A no recibe aportaciones adicionales.
 
 ## Modelo financiero: convención 30/360
 
@@ -91,6 +98,31 @@ Una única tabla sustituye al antiguo «Detalle mensual» y a los «Movimientos 
 
 Si alguna cuota deja la cuenta en negativo, el simulador avisa de un **descubierto**. Las cifras se pueden consultar como estimaciones, pero no representan una operación bancariamente viable sin otra fuente de liquidez. No se incluyen intereses de descubierto, comisiones, seguros ni penalizaciones.
 
+## Aportaciones en el panel de configuración
+
+La sección **Aportaciones · B y C** del panel izquierdo reúne, por este orden, las aportaciones periódicas (día 1 de cada mes), el botón **Configurar aportaciones puntuales** y el editor plegable de puntuales. Ambas se aplican exactamente igual a B y C; A no recibe ninguna.
+
+- El editor empieza **plegado**. El botón (`aria-expanded`/`aria-controls`, con chevron) lo despliega con una transición breve; plegarlo no borra ni recalcula nada, y el contenido plegado no es enfocable con teclado.
+- Resumen: meses con aportación y total dentro del plazo simulado, actualizados al instante.
+- Calendario por años con el importe en cada mes (verde = hay aportación). Al seleccionar un mes se edita su importe; un importe de 0 € elimina la aportación.
+- **Añadir por rango:** desde el mes seleccionado hasta «Aplicar hasta», cada X meses; «Sumar» acumula y «Establecer» sustituye.
+- Límites (importe por mes, botones ±, escritura, pegado) y paso de 100 € definidos en `js/config.js`.
+- Las aportaciones puntuales se ingresan el **día 1** del mes, igual que las periódicas. No se modifica ninguna fórmula del motor.
+- La antigua sección «Aportaciones puntuales» situada bajo la tabla de detalle ya no existe.
+
+## Confirmaciones y escenarios del detalle
+
+- **Restablecer** y **Eliminar cuenta** piden confirmación con un modal de la aplicación (`js/ui/dialogo.js`), no con el cuadro nativo del navegador. Esc, el fondo y «Cancelar» equivalen a rechazar.
+- En **Detalle financiero comparativo** los botones A, B y C muestran u ocultan cada escenario en la tabla y en el CSV. Siempre queda al menos uno activo: el último no se puede desactivar.
+
+## Panel contraído y cabecera
+
+- Al contraer la configuración (`«`) queda una **franja vertical** con el resumen: modo de calendario, capital, préstamo, TIN del préstamo, plazo, el TIN de cada cuenta (con su color), retención, aportación periódica y puntuales (meses y total). Se actualiza con cada cambio y pulsarla expande el panel. En móvil la franja pasa a filas.
+- La **cabecera** (icono, etiqueta, título y subtítulo) queda fija arriba y se compacta al desplazarse (más de 70 px; vuelve a expandirse por debajo de 10 px): solo icono y título, en una línea y con puntos suspensivos si no cabe, con borde y sombra. Al imprimir se muestra completa, sin icono y sin posición fija.
+- En los resultados, **«Qué se está comparando»** explica A, B y C con texto estático (sin importes). No se imprime.
+- El **pie de página** ocupa todo el ancho: indica que son estimaciones sin garantía de rentabilidad y que no incluyen comisiones, seguros, penalizaciones, cambios de tipos ni límites de remuneración, y que la retención puede no coincidir con la tributación definitiva.
+- Esta revisión es solo de presentación: los cálculos financieros no se han modificado.
+
 ## Estructura del proyecto
 
 ```text
@@ -106,28 +138,27 @@ simulador-ahorro-apalancamiento/
 │   │   ├── calculos.js          # Motor puro, secuencia diaria, amortización, umbrales
 │   │   └── agrupacion.js        # Agrupación temporal del detalle (suma el registro diario)
 │   ├── ui/
-│   │   ├── controles.js         # Controles, inputs, aportaciones mes a mes
-│   │   ├── resultados.js        # Renderizado de seis resultados, detalle comparativo, comparativas
-│   │   └── grafico.js           # Gráfica Canvas interactiva
+│   │   ├── dialogo.js           # Confirmación en modal (sustituye a window.confirm)
+│   │   ├── colapsable.js        # Bloque plegable accesible (aria-expanded, contenido `inert` al plegar)
+│   │   ├── controles.js         # Controles, cuentas, aportaciones periódicas y puntuales
+│   │   ├── resultados.js        # Renderizado de seis resultados, detalle comparativo
+│   │   ├── lienzo.js            # Utilidades Canvas compartidas (ejes, guía, tooltip)
+│   │   ├── grafico.js           # Gráfica de patrimonio
+│   │   └── grafico-intereses.js # Gráfica de interés neto vs interés del préstamo
 │   ├── services/
-│   │   └── archivos.js          # CSV del detalle, JSON y escenarios locales
+│   │   └── archivos.js          # Exportación CSV del detalle
 │   └── inicio.js                # Inicialización de módulos
 ├── tests/
-│   └── calculos.test.cjs        # Pruebas de regresión del motor financiero
+│   ├── calculos.test.cjs        # Pruebas de regresión del motor financiero
+│   └── ui.test.cjs              # Pruebas de interfaz con Chrome headless (se omiten sin Chrome)
 └── README.md
 ```
 
 Los archivos JS usan el espacio compartido `window.Simulador`, mediante scripts clásicos cargados con `defer` y rutas relativas; por tanto, se ejecutan sin backend y sin bundler.
 
-## Compatibilidad con versiones anteriores
-
-Al importar un JSON de la versión anterior que incluya `periodicaC` y `puntualesC` independientes, **se ignoran esos dos campos**. El escenario C siempre usa `periodicaB` y `puntualesB`. Se conserva la clave de almacenamiento local existente para permitir cargar escenarios guardados en la versión anterior, aplicando automáticamente la nueva regla al cargarlos.
-
-## Guardar, importar y exportar
+## Exportar e imprimir
 
 - **CSV del detalle:** replica la tabla «Detalle financiero comparativo» (modalidad y agrupación elegidas): tres filas A/B/C por período más tres filas de total / cierre.
-- **JSON:** configuración completa, incluidos los importes puntuales por mes.
-- **Escenarios guardados:** usa `localStorage` del navegador. Si el almacenamiento local no está permitido (por ejemplo, `file://` bajo algunos navegadores), se recomienda usar Exportar JSON.
 - **Imprimir / PDF:** botón que abre el diálogo de impresión del navegador.
 
 ## Pruebas automáticas
@@ -135,10 +166,12 @@ Al importar un JSON de la versión anterior que incluya `periodicaC` y `puntuale
 Opcionalmente, con **Node.js 18+** desde la carpeta raíz del proyecto:
 
 ```sh
-node --test tests/calculos.test.cjs
+node --test tests/
 ```
 
-Las pruebas incluyen la consistencia de la agrupación (seis niveles × ambas cuentas × ambos calendarios), límites de importación, sincronización B/C, 30/360, abono mensual el día 30, devengo y reinversión diaria, aportaciones día 1, cuota del día 30, cierre tras N cuotas, retención, aportaciones y conciliación de patrimonio.
+`tests/ui.test.cjs` necesita Google Chrome o Chromium instalado; si no lo encuentra, se omite. Comprueba el estado plegado inicial, que plegar conserva los valores, el rango, los límites, la igualdad de aportaciones B/C, la ausencia de la sección antigua y la falta de desbordamiento horizontal a 320, 375, 768, 1024 y 1440 px.
+
+Las pruebas incluyen la consistencia de la agrupación (seis niveles × ambas cuentas × ambos calendarios), sincronización B/C, 30/360, abono mensual el día 30, devengo y reinversión diaria, aportaciones día 1, cuota del día 30, cierre tras N cuotas, retención, aportaciones y conciliación de patrimonio.
 
 ## Límites de precisión y alcance
 
