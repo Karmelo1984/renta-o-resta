@@ -1,0 +1,99 @@
+@layer components {
+  .tarjeta {
+    @apply rounded-tarjeta border border-linea bg-superficie shadow-tarjeta;
+  }
+
+  .texto-pequeno {
+    @apply text-xs text-tenue;
+  }
+
+  .panel-config .texto-pequeno,
+  .detalle .texto-pequeno {
+    @apply mt-1 mb-0;
+  }
+
+  .micro {
+    @apply text-[11px] text-tenue;
+  }
+
+  .sobretitulo {
+    @apply text-[11px] font-extrabold tracking-[0.13em] text-verde uppercase;
+  }
+
+  .ayuda {
+    @apply mt-[9px] text-xs text-tenue;
+  }
+
+  ul.ayuda {
+    @apply list-disc pl-[18px] leading-[1.6];
+  }
+
+  ul.ayuda ul {
+    @apply list-disc pl-[18px];
+  }
+
+  .positivo {
+    @apply text-[#08775e];
+  }
+
+  .negativo {
+    @apply text-rojo;
+  }
+
+  /* Aviso informativo; variantes: .aviso-warn, .aviso-error. */
+  .aviso {
+    @apply mt-[13px] flex items-start gap-[9px] rounded-[10px] border border-[#e5e9ef] bg-[#fafbfd] px-[13px] py-[11px] text-xs text-tenue;
+  }
+
+  .aviso > div {
+    @apply min-w-0 [overflow-wrap:anywhere];
+  }
+
+  .aviso b {
+    @apply text-tinta;
+  }
+
+  .aviso-warn {
+    @apply border-[#f1dcac] bg-[#fff9ee] text-[#875b12];
+  }
+
+  .aviso-error {
+    @apply border-[#f5d4d8] bg-[#fff2f2] text-[#a32e3a];
+  }
+
+  .aviso-marca {
+    @apply text-[15px] leading-none font-black;
+  }
+
+  .chip {
+    @apply rounded-[7px] bg-[#eff3f8] px-[7px] py-[3px] text-[10px] font-extrabold text-[#536985];
+  }
+
+  .leyenda {
+    @apply mt-[9px] flex flex-wrap gap-[17px];
+  }
+
+  .leyenda span {
+    @apply inline-flex items-center gap-[7px] text-[11px] font-bold text-[#5b6980];
+  }
+
+  .leyenda i {
+    @apply inline-block h-[3px] w-3 rounded-[9px];
+  }
+
+  .metodologia {
+    @apply p-[21px] text-[#52637b];
+  }
+
+  .metodologia summary {
+    @apply cursor-pointer font-extrabold text-tinta;
+  }
+
+  .metodologia code {
+    @apply rounded-[5px] bg-[#eef3f8] px-1 py-0.5;
+  }
+
+  .metodologia ul {
+    @apply list-disc pl-[18px] text-xs leading-[1.7];
+  }
+}

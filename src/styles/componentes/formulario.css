@@ -1,0 +1,200 @@
+@layer components {
+  .campo {
+    @apply mb-[17px];
+  }
+
+  .campo-linea {
+    @apply mb-1.5 flex flex-wrap items-center justify-between gap-[9px];
+  }
+
+  .campo-etiqueta {
+    @apply min-w-0 flex-auto text-xs font-[650];
+  }
+
+  /* Etiqueta pequeña en mayúsculas (selectores del detalle). */
+  .etiqueta-mayus {
+    @apply text-[11px] font-extrabold tracking-[0.06em] text-tenue uppercase;
+  }
+
+  /* Grupo de entrada numérica: [−] input unidad [+]. */
+  .entrada-num {
+    @apply flex max-w-full min-w-0 items-center overflow-hidden rounded-[9px] border border-borde-campo bg-white;
+    min-height: 35px;
+  }
+
+  .entrada-num:focus-within {
+    @apply border-azul;
+    box-shadow: 0 0 0 3px #e6effc;
+  }
+
+  .entrada-num input {
+    @apply w-[70px] min-w-0 flex-[1_1_65px] border-0 bg-transparent px-0.5 py-1.5 text-center text-[13px] font-bold text-tinta outline-none;
+  }
+
+  .entrada-num > span {
+    @apply pr-1.5 pl-[3px] text-xs font-bold whitespace-nowrap text-[#79869b];
+  }
+
+  .stepper-btn {
+    @apply flex min-w-[26px] flex-[0_0_26px] items-center justify-center self-stretch rounded-none border-0 bg-[#f2f6fb] text-lg leading-none font-semibold text-[#445a76] select-none;
+    appearance: none;
+    touch-action: manipulation;
+  }
+
+  .stepper-btn:hover {
+    @apply bg-[#e4edf9] text-[#173866];
+  }
+
+  .stepper-btn:active {
+    @apply bg-[#d2e0f3];
+  }
+
+  .stepper-btn.minus {
+    @apply border-r border-[#e0e8f2];
+  }
+
+  .stepper-btn.plus {
+    @apply border-l border-[#e0e8f2];
+  }
+
+  .deslizador {
+    @apply mt-[3px] h-[15px] w-full accent-azul;
+  }
+
+  .deslizador-verde {
+    @apply accent-verde;
+  }
+
+  .selector {
+    @apply w-full rounded-[9px] border border-borde-campo bg-white p-[9px] text-tinta;
+  }
+
+  .fila-selectores {
+    @apply mt-2.5 flex items-center gap-[7px];
+  }
+
+  .fila-selectores > select {
+    @apply min-w-0 flex-1;
+  }
+
+  .fila-selectores > select:first-child {
+    flex: 1.7 1 0;
+  }
+
+  /* Dos campos lado a lado. */
+  .fila-2 {
+    @apply grid grid-cols-2 gap-2.5;
+  }
+
+  .fila-2 .campo-linea {
+    @apply min-h-[38px] flex-col items-stretch gap-[5px];
+  }
+
+  .fila-2 .entrada-num {
+    @apply w-full;
+  }
+
+  /* Control segmentado (botones exclusivos o conmutadores). */
+  .segmentado {
+    @apply flex gap-[3px] rounded-[11px] bg-gris-suave p-1;
+  }
+
+  .segmentado button {
+    @apply rounded-lg border-0 bg-transparent px-[13px] py-2 font-extrabold text-[#6e7b90];
+  }
+
+  .segmentado button.active {
+    @apply bg-white text-tinta;
+    box-shadow: 0 1px 5px #ced8e6;
+  }
+
+  .segmentado button[aria-disabled='true'] {
+    @apply cursor-not-allowed;
+  }
+
+  /* Variante compacta usada en el detalle. */
+  .segmentado-compacto {
+    @apply gap-0.5 p-[3px];
+  }
+
+  .segmentado-compacto button {
+    @apply rounded-lg px-[11px] py-[7px] text-xs;
+  }
+
+  .segmentado-compacto button:not(.active) {
+    @apply opacity-75;
+  }
+
+  .segmentado-3 button {
+    @apply min-w-[38px];
+  }
+
+  .selector-detalle {
+    @apply flex min-w-0 flex-col items-start gap-[5px];
+  }
+
+  .selector-detalle select {
+    @apply w-auto max-w-full min-w-[190px] px-[9px] py-2;
+  }
+
+  .selector-detalle .segmentado {
+    @apply flex-nowrap;
+  }
+
+  .selectores-detalle {
+    @apply mt-2.5 mb-[15px] flex flex-wrap items-end gap-x-[22px] gap-y-3;
+  }
+
+  @media (max-width: 550px) {
+    .segmentado {
+      @apply grid grid-cols-2;
+    }
+
+    .segmentado button {
+      @apply min-w-0 px-[5px] py-[9px] text-xs;
+    }
+
+    .segmentado-3 {
+      @apply grid-cols-3;
+    }
+
+    .fila-selectores {
+      @apply flex-wrap;
+    }
+
+    .fila-selectores > select {
+      @apply basis-full;
+    }
+
+    .fila-2 .campo-linea {
+      @apply min-h-[44px];
+    }
+
+    .selectores-detalle {
+      @apply grid gap-2.5;
+    }
+
+    .selector-detalle {
+      @apply w-full;
+    }
+
+    .selector-detalle select,
+    .selector-detalle .segmentado {
+      @apply w-full;
+    }
+
+    .selector-detalle .segmentado button {
+      @apply px-1 py-2;
+    }
+  }
+
+  @media (max-width: 370px) {
+    .fila-2 {
+      @apply grid-cols-1;
+    }
+
+    .fila-2 .campo-linea {
+      @apply min-h-0;
+    }
+  }
+}

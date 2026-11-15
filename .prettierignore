@@ -1,0 +1,21 @@
+# Dependencias y artefactos
+node_modules/
+dist/
+dist-ssr/
+coverage/
+.vite/
+*.tsbuildinfo
+
+# Generados
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Entorno y logs
+.env*
+*.log
+
+# Otros
+.DS_Store
+.codegraph/
+.claude/

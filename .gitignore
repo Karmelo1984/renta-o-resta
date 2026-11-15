@@ -1,0 +1,62 @@
+# Dependencias
+node_modules/
+.pnp.*
+.yarn/
+
+# Build y artefactos
+dist/
+dist-ssr/
+coverage/
+*.tsbuildinfo
+.vite/
+.eslintcache
+.prettiercache
+
+# Entorno local y secretos
+.env
+.env.*
+!.env.example
+*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Temporales y pruebas manuales
+.ui-test.html
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Sistema operativo
+.DS_Store
+._*
+.AppleDouble
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+.directory
+.fuse_hidden*
+.Trash-*
+
+# Editores / IDEs (se versiona solo la configuración compartida)
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.sublime-workspace
+*.code-workspace
+
+# Claude Code (configuración personal)
+.claude/settings.local.json
+.codegraph/

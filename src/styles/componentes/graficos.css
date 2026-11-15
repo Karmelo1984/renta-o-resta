@@ -1,0 +1,107 @@
+@layer components {
+  .grafico-tarjeta {
+    @apply p-[22px];
+  }
+
+  .grafico-cabecera {
+    @apply mb-[11px] flex flex-wrap items-start justify-between gap-3;
+  }
+
+  .grafico-cabecera > div {
+    @apply min-w-0 [overflow-wrap:anywhere];
+  }
+
+  .grafico-caja {
+    @apply relative mt-[7px] h-[308px];
+  }
+
+  .grafico-caja canvas {
+    @apply block size-full;
+  }
+
+  .grafico-tooltip {
+    @apply pointer-events-none absolute z-[4] hidden max-w-full overflow-hidden rounded-[10px] border border-[#dce5f0] bg-white px-3 py-2.5 text-xs whitespace-nowrap;
+    box-shadow: 0 9px 25px #1e365820;
+  }
+
+  .grafico-tooltip strong {
+    @apply mb-[5px] block;
+  }
+
+  .grafico-tooltip div {
+    @apply flex items-center justify-between gap-[18px] tabular-nums;
+  }
+
+  /* Casillas de series del gráfico de patrimonio. */
+  .series-grupos {
+    @apply mt-3 grid gap-2;
+  }
+
+  .series-fila {
+    @apply flex flex-wrap items-center gap-[7px];
+  }
+
+  .series-etiqueta {
+    @apply min-w-32 text-[11px] font-extrabold tracking-[0.04em] text-tenue;
+  }
+
+  .series-etiqueta:empty::after {
+    content: '…';
+  }
+
+  .serie {
+    @apply inline-flex cursor-pointer items-center gap-[7px] rounded-full border border-[#d5deea] bg-white px-[11px] py-1.5 text-xs font-bold text-tenue;
+    transition:
+      background 0.15s,
+      border-color 0.15s,
+      color 0.15s;
+  }
+
+  .serie input {
+    @apply pointer-events-none absolute opacity-0;
+  }
+
+  .serie i {
+    @apply box-border size-[9px] rounded-full border-2 bg-transparent;
+    border-color: var(--c);
+  }
+
+  .serie:hover {
+    border-color: var(--c);
+  }
+
+  .serie:has(input:checked) {
+    @apply text-tinta;
+    border-color: var(--c);
+    background: color-mix(in srgb, var(--c) 10%, #fff);
+  }
+
+  .serie:has(input:checked) i {
+    background: var(--c);
+  }
+
+  .serie:has(input:focus-visible) {
+    outline: 2px solid var(--c);
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 780px) {
+    .grafico-caja {
+      @apply h-[290px];
+    }
+  }
+
+  @media (max-width: 550px) {
+    .grafico-tarjeta {
+      @apply p-4;
+    }
+
+    .grafico-caja {
+      @apply h-[258px];
+    }
+
+    .series-etiqueta {
+      @apply min-w-full;
+    }
+  }
+}
