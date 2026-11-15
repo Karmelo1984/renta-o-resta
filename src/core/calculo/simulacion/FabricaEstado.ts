@@ -1,8 +1,11 @@
 import { CONFIG } from '@/config/Configuracion';
 import type { EstadoSimulacionDto } from '@/core/dto/estado/EstadoSimulacionDto';
+import { Logger } from '@/core/log/Logger';
 
 /** Fábrica del estado inicial de la simulación. */
 export class FabricaEstado {
+  private static readonly log = new Logger('estado');
+
   /**
    * Mes de inicio por defecto.
    * @param ahora - Fecha de referencia.
@@ -31,7 +34,7 @@ export class FabricaEstado {
    */
   public static crearInicial(ahora: Date = new Date()): EstadoSimulacionDto {
     const { campos, cuentas, calendario } = CONFIG;
-    return {
+    const estado: EstadoSimulacionDto = {
       capital: campos.capital.valor,
       prestamo: campos.prestamo.valor,
       tinPrestamo: campos.tinPrestamo.valor,
@@ -43,5 +46,13 @@ export class FabricaEstado {
       calendario: calendario.modo,
       inicio: FabricaEstado.mesInicio(ahora),
     };
+    FabricaEstado.log.debug('Estado inicial creado', {
+      capital: estado.capital,
+      prestamo: estado.prestamo,
+      meses: estado.meses,
+      cuentas: estado.cuentas.length,
+      inicio: estado.inicio,
+    });
+    return estado;
   }
 }

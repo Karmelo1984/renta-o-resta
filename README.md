@@ -1,4 +1,6 @@
-# Simulador de ahorro y apalancamiento
+# Renta o Resta
+
+Simulador de ahorro y apalancamiento. _Los números deciden._
 
 Herramienta de simulación financiera que compara **tres escenarios** de ahorro en un número variable de cuentas remuneradas configurables, con aportaciones propias y un préstamo.
 

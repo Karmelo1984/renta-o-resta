@@ -115,12 +115,17 @@ export class SimuladorFinanciero {
     trazar: boolean,
   ): ResultadoSimulacionDto {
     const cuenta = modelo.cuentas.find((a) => a.id === cuentaId);
-    if (!cuenta) throw new Error('Escenario o cuenta desconocidos.');
+    if (!cuenta) {
+      this.log.error('Cuenta desconocida', { escenario, cuenta: cuentaId });
+      throw new Error('Escenario o cuenta desconocidos.');
+    }
     const meses = modelo.meses;
     if (!Number.isInteger(meses) || meses < 1 || meses > CONFIG.campos.meses.max) {
+      this.log.error('Plazo fuera de rango', { escenario, cuenta: cuentaId, meses });
       throw new Error('Plazo fuera de rango.');
     }
     if (meses % PlazoSimulacion.pasoMeses([cuenta]) !== 0) {
+      this.log.error('Plazo no múltiplo del periodo', { cuenta: cuentaId, meses });
       throw new Error('El plazo debe ser múltiplo del periodo de la cuenta.');
     }
     const tinPrestamo = opciones.tinPrestamo ?? modelo.tinPrestamo;
@@ -136,6 +141,18 @@ export class SimuladorFinanciero {
         tinPrestamo,
         calendario: modelo.calendario,
         primeraCuota: cuotas[0]?.amount,
+        periodicaB: escenario === 'A' ? 0 : modelo.periodicaB,
+        retencion: modelo.retencion,
+        tinCuenta: cuenta.tin,
+        ingreso: cuenta.ingreso,
+        calculo: cuenta.calculo,
+        metodo: cuenta.metodo,
+      });
+      this.log.debug('Cuadro del préstamo', {
+        cuotas: cuotas.length,
+        totalIntereses: redondear(cuotas.reduce((t, c) => t + c.interest, 0)),
+        ultimaCuota: cuotas.at(-1)?.amount,
+        deudaFinal: cuotas.at(-1)?.debt,
       });
     }
     const resultado = this.recorrerDias(modelo, escenario, cuenta, prestamo, cuotas, trazar);
@@ -221,6 +238,16 @@ export class SimuladorFinanciero {
       dia.bruto = bruto;
       dia.retencion = retencion;
       dia.neto = neto;
+      if (trazar) {
+        this.log.debug('Abono de intereses', {
+          mes: dia.mes,
+          dia: dia.dia,
+          bruto,
+          retencion,
+          neto,
+          saldo,
+        });
+      }
     };
 
     for (let mes = 1; mes <= meses; mes++) {
@@ -239,6 +266,9 @@ export class SimuladorFinanciero {
           aportacionPeriodica = redondear(aportacionPeriodica + periodica);
           aportacionPuntual = redondear(aportacionPuntual + puntual);
           dia.aportes = redondear(periodica + puntual);
+          if (trazar && dia.aportes > 0) {
+            this.log.debug('Aportación', { mes, periodica, puntual, saldo });
+          }
         }
         // 2-3. Saldo medio: devengo diario con el saldo del día; se abona al fin del periodo de
         // ingreso (diario: el mismo día). Con saldo a cierre no hay devengo diario: ver paso 5.
@@ -258,13 +288,27 @@ export class SimuladorFinanciero {
           dia.cuota = cuota.amount;
           dia.interesPrestamo = cuota.interest;
           dia.amortizacion = cuota.amortization;
+          if (trazar) {
+            this.log.debug('Cuota del préstamo', {
+              mes,
+              cuota: cuota.amount,
+              interes: cuota.interest,
+              amortizacion: cuota.amortization,
+              deuda,
+              saldo,
+            });
+          }
         }
         // 5. Saldo a cierre: al fin del periodo de cálculo, sobre el saldo tras aportaciones y cuota
         // y antes de abonar.
         if (cierre) {
           if (finPeriodo(cuenta.calculo, mes, d, cal)) {
-            pendiente +=
+            const devengo =
               (Math.max(0, saldo) * tin) / (cuenta.calculo === 'mensual' ? mesesAnio : 1);
+            pendiente += devengo;
+            if (trazar) {
+              this.log.debug('Devengo a cierre', { mes, dia: d, saldo, devengo, pendiente });
+            }
           }
           if (finPeriodo(cuenta.ingreso, mes, d, cal)) {
             abonar(pendiente);
@@ -275,10 +319,25 @@ export class SimuladorFinanciero {
         dia.saldo = saldo;
         dia.pendiente = pendiente;
         dias.push(dia);
-        if (saldo < -CERO) descubierto = true;
+        if (saldo < -CERO) {
+          if (trazar && !descubierto)
+            this.log.warn('Primer día en descubierto', { mes, dia: d, saldo });
+          descubierto = true;
+        }
       }
     }
     cerrarMes();
+    if (trazar) {
+      this.log.debug('Totales del recorrido', {
+        dias: dias.length,
+        aportacionPeriodica,
+        aportacionPuntual,
+        netoAbonado,
+        retencionAbonada,
+        descubierto,
+        deudaFinal: deuda,
+      });
+    }
     const patrimonio = redondear(saldo - deuda);
     return {
       months: meses,

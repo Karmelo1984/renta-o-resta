@@ -1,9 +1,9 @@
 {
-  "name": "simulador-ahorro-apalancamiento",
+  "name": "renta-o-resta",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Simulador de ahorro y apalancamiento: compara tres escenarios en cuentas remuneradas.",
+  "description": "Renta o Resta, simulador de ahorro y apalancamiento: compara tres escenarios en cuentas remuneradas.",
   "engines": {
     "node": ">=22.12.0"
   },

@@ -4,7 +4,7 @@ Guía de trabajo del proyecto. Seguirla siempre.
 
 ## Proyecto
 
-Simulador de ahorro y apalancamiento: web estática (sin backend) en **Vite + TypeScript + Tailwind v4**, sin framework (DOM vanilla en TS). Se desarrolla en local con HMR y se despliega a GitHub Pages desde `main` mediante GitHub Actions (`.github/workflows/deploy.yml`). Todavía no hay remoto; el repositorio está en fase de desarrollo.
+**Renta o Resta** (repositorio `renta-o-resta`), simulador de ahorro y apalancamiento: web estática (sin backend) en **Vite + TypeScript + Tailwind v4**, sin framework (DOM vanilla en TS). Se desarrolla en local con HMR y se despliega a GitHub Pages desde `main` mediante GitHub Actions (`.github/workflows/deploy.yml`). Todavía no hay remoto; el repositorio está en fase de desarrollo.
 
 ## Comandos
 
@@ -13,6 +13,14 @@ Simulador de ahorro y apalancamiento: web estática (sin backend) en **Vite + Ty
 - `npm run typecheck`, `npm run lint`, `npm run format`, `npm test`.
 - Antes de dar algo por terminado deben pasar `typecheck`, `lint`, `test` y `build`.
 - Pages sirve en subruta: `VITE_BASE_PATH` (`/<repo>/`) lo fija el workflow; en local es `/`.
+
+## Multiplataforma y ficheros de configuración
+
+- Debe funcionar igual en Windows, Linux y macOS: finales de línea **LF** (`.gitattributes` con `eol=lf` y Prettier `endOfLine: "lf"`); no usar rutas ni scripts específicos de un SO.
+- `.gitignore`: dependencias, `dist/`, caches, `.env*` (salvo `.env.example`), logs, basura de SO/IDE y `.claude/settings.local.json`. De `.vscode/` solo se versionan `extensions.json` y `settings.json`.
+- `.prettierignore`: `node_modules`, `dist`, `coverage`, lockfiles y ficheros generados.
+- `.prettierrc.json`: comillas simples, `printWidth` 100, `trailingComma: all`, plugin de Tailwind (`./src/styles/main.css`).
+- Al añadir carpetas o herramientas nuevas que generen artefactos, actualizar `.gitignore` y `.prettierignore`.
 
 ## Programación orientada a objetos
 

@@ -12,8 +12,8 @@ export class SeccionPie {
     <p class="pie-limitaciones">Los cálculos no incluyen comisiones, seguros, penalizaciones, cambios de tipos ni límites de remuneración. La retención elegida puede no coincidir con la tributación definitiva.</p>
   </div>
   <div class="pie-base">
-    <strong class="pie-marca">Simulador de ahorro y apalancamiento</strong>
-    <span class="pie-leyenda">Herramienta de simulación financiera</span>
+    <strong class="pie-marca">Renta o Resta</strong>
+    <span class="pie-leyenda">Simulador de ahorro y apalancamiento · Los números deciden.</span>
   </div>
 </footer>`;
   }

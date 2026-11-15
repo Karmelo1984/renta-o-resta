@@ -25,7 +25,7 @@ beforeEach(() => {
 });
 
 test('Monta la página: cabecera, tres escenarios y resultados para cada cuenta', () => {
-  assert.equal(document.querySelector('h1')?.textContent, 'Simulador de ahorro y apalancamiento');
+  assert.equal(document.querySelector('h1')?.textContent, 'Renta o Resta');
   assert.equal(
     [...document.querySelectorAll('.escenario-letra')].map((e) => e.textContent).join(''),
     'ABC',
