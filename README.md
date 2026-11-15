@@ -37,7 +37,7 @@ Las releases usan tags estables `vX.Y.Z`, sin sufijos de prerelease en `main`. L
 
 **Implementado en el workflow:** `.github/workflows/deploy.yml` ejecuta `npm ci`, tipos, lint, tests y build; publica `dist/` en GitHub Pages tras un push a `main`. También admite `workflow_dispatch`. Requiere _Settings → Pages → Source: GitHub Actions_. No se activa en PR, no comprueba SemVer ni tags y no crea releases o changelog. Por tanto, hoy el merge a `main` puede iniciar producción antes de crear el tag; el tag por sí solo no despliega.
 
-**Pendiente de implantar:** ramas `itg` y `dev`, protecciones y comprobaciones obligatorias de PR, validación automatizada de releases y un despliegue de desarrollo separado para `dev`. La revisión inicial encontró `main` y `migrar`; `migrar` no forma parte del flujo acordado. Esta documentación no crea ramas de entorno ni configura protecciones o workflows.
+Las ramas permanentes son `itg`, `dev` y `main`. Quedan pendientes las protecciones y comprobaciones obligatorias de PR, validación automatizada de releases y un despliegue de desarrollo separado para `dev`.
 
 La CI debe verificar los cambios antes de fusionarlos; la CD publica únicamente los candidatos aprobados en su entorno. El futuro entorno de desarrollo debe tener URL y destino separados de producción: añadir `dev` al workflow actual no proporciona dos versiones aisladas. Hasta implantarlo, la validación de `dev` se realiza en local y no se debe presentar como validación de un despliegue de desarrollo. Los controles pendientes se detallan en CONTRIBUTING.md.
 

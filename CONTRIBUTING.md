@@ -31,9 +31,9 @@ itg → feature/<descripcion> → PR a itg → PR a dev → PR de release a main
 - `dev` recibe promociones de `itg` para validar un candidato completo. Su despliegue de desarrollo está pendiente; mientras tanto, validar localmente el commit candidato.
 - `main` recibe exclusivamente releases estables desde `dev`. No admite funcionalidades aisladas, candidatos incompletos ni pushes directos.
 
-Antes de adoptar el flujo, el mantenedor debe crear `itg` y `dev` desde una base estable común de `main` y configurar sus controles. En la revisión inicial solo figuraban `main` y `migrar`; no se presupone una función para `migrar`.
+Las ramas `itg` y `dev` se crearon desde el mismo commit de `main`. La configuración de sus controles sigue pendiente.
 
-Ejemplo, una vez creada `itg`:
+Para iniciar un desarrollo desde `itg`:
 
 ```sh
 git fetch origin

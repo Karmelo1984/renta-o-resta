@@ -22,4 +22,4 @@ Los cambios relevantes se documentan en castellano, agrupados por versión y con
 - Documentación del flujo `feature/* → itg → dev → main`, con integración local en `itg`, validación del candidato en `dev` y promoción controlada de releases a `main`.
 - README: requisitos de Node.js e instalación reproducible, y distinción entre el workflow de Pages existente y los controles y despliegue de desarrollo pendientes.
 
-Esta entrada describe únicamente cambios documentales. No se han implantado ramas de entorno, protecciones, CI de PR, despliegue de desarrollo ni automatización de releases.
+Las ramas permanentes `itg` y `dev` ya están creadas. Las protecciones, la CI de PR, el despliegue de desarrollo y la automatización de releases siguen pendientes.
