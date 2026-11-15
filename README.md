@@ -8,17 +8,38 @@ Aplicación web estática para PC o móvil, **sin servidor ni servicios externos
 
 ## Desarrollo y despliegue
 
-Requisitos: Node.js 22 o superior.
+Requisitos: Node.js 22.12.0 o superior, según `package.json`.
 
 ```sh
-npm install
+npm ci
 npm run dev        # servidor local con recarga automática (logger en debug)
 npm test           # pruebas (Vitest)
 npm run lint       # ESLint + TSDoc
 npm run build      # genera dist/ (logger en warn)
 ```
 
-**Despliegue:** al hacer push a `main`, `.github/workflows/deploy.yml` ejecuta tipos, lint, tests y build, y publica `dist/` en GitHub Pages. Una sola vez, en el repositorio: _Settings → Pages → Source: GitHub Actions_.
+### Flujo de ramas y versiones
+
+El flujo acordado es `feature/* → itg → dev → main → vX.Y.Z`, con PR en cada integración y promoción:
+
+| Rama | Responsabilidad |
+| --- | --- |
+| `feature/*` | Desarrollo acotado, creado desde `itg` actualizado. |
+| `itg` | Integración de desarrollos revisados y probados en local, incluida la combinación resultante. |
+| `dev` | Validación del candidato a release; destino del futuro despliegue de desarrollo. |
+| `main` | Producción: solo promociones estables desde `dev`, con versión SemVer, changelog y tag. |
+
+Las tres ramas permanentes tienen responsabilidades distintas. Este modelo añade coordinación: durante la validación de una release se congela el candidato en `dev`; el trabajo posterior puede continuar en `itg`. No se promueven funcionalidades incompletas ni se hacen cambios directos en las ramas permanentes. Las correcciones siguen el mismo recorrido.
+
+Las releases usan tags estables `vX.Y.Z`, sin sufijos de prerelease en `main`. La versión de los metadatos y el changelog se preparan antes de promover; el tag identifica el commit final aprobado de `main`. Véanse [CONTRIBUTING.md](CONTRIBUTING.md) para controles y procedimiento, y [CHANGELOG.md](CHANGELOG.md) para cambios pendientes y versiones publicadas.
+
+### CI/CD: estado actual y objetivo
+
+**Implementado en el workflow:** `.github/workflows/deploy.yml` ejecuta `npm ci`, tipos, lint, tests y build; publica `dist/` en GitHub Pages tras un push a `main`. También admite `workflow_dispatch`. Requiere _Settings → Pages → Source: GitHub Actions_. No se activa en PR, no comprueba SemVer ni tags y no crea releases o changelog. Por tanto, hoy el merge a `main` puede iniciar producción antes de crear el tag; el tag por sí solo no despliega.
+
+**Pendiente de implantar:** ramas `itg` y `dev`, protecciones y comprobaciones obligatorias de PR, validación automatizada de releases y un despliegue de desarrollo separado para `dev`. La revisión inicial encontró `main` y `migrar`; `migrar` no forma parte del flujo acordado. Esta documentación no crea ramas de entorno ni configura protecciones o workflows.
+
+La CI debe verificar los cambios antes de fusionarlos; la CD publica únicamente los candidatos aprobados en su entorno. El futuro entorno de desarrollo debe tener URL y destino separados de producción: añadir `dev` al workflow actual no proporciona dos versiones aisladas. Hasta implantarlo, la validación de `dev` se realiza en local y no se debe presentar como validación de un despliegue de desarrollo. Los controles pendientes se detallan en CONTRIBUTING.md.
 
 ## Escenarios
 
