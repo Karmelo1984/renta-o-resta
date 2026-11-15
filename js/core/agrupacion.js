@@ -95,5 +95,5 @@
     const total = fila(result.dias, { label: 'Total / cierre', sub: `${result.months} meses` });
     return { periodos, total };
   }
-  Sim.agrupacion = { NIVELES, agrupar };
+  Sim.agrupacion = { agrupar };
 })(window.Simulador);

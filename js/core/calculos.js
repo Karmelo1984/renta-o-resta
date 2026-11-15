@@ -23,37 +23,28 @@
   };
 
   /**
-   * Cuadro de amortización francés (cuota constante, última cuota ajusta el residuo).
+   * Cuotas del préstamo francés (cuota constante, la última ajusta el residuo).
    * @param {number} principal Capital prestado en €.
    * @param {number} tin TIN anual en %.
    * @param {number} months Número de cuotas mensuales.
-   * @returns {{payments: Array<{number: number, amount: number, interest: number, amortization: number, debt: number}>, interestTotal: number, nominal: number, totalPaid: number}} Cuotas y totales.
+   * @returns {Array<{amount: number, interest: number, amortization: number, debt: number}>} Una por mes.
    */
   function loanSchedule(principal, tin, months) {
-    const interestRate = tin / 1200;
+    const rate = tin / 1200;
     const nominal =
       principal === 0
         ? 0
-        : interestRate === 0
+        : rate === 0
           ? principal / months
-          : (principal * interestRate) / (1 - (1 + interestRate) ** -months);
-    let debt = round(principal),
-      interestTotal = 0;
-    const payments = [];
-    for (let k = 1; k <= months; k++) {
-      const interest = round(debt * interestRate);
-      const amount = k === months ? round(debt + interest) : round(nominal);
-      const amortization = round(amount - interest);
+          : (principal * rate) / (1 - (1 + rate) ** -months);
+    let debt = round(principal);
+    return Array.from({ length: months }, (_, i) => {
+      const interest = round(debt * rate),
+        amount = i === months - 1 ? round(debt + interest) : round(nominal),
+        amortization = round(amount - interest);
       debt = round(Math.max(0, debt - amortization));
-      interestTotal = round(interestTotal + interest);
-      payments.push({ number: k, amount, interest, amortization, debt });
-    }
-    return {
-      payments,
-      interestTotal,
-      nominal: round(nominal),
-      totalPaid: round(payments.reduce((s, x) => s + x.amount, 0)),
-    };
+      return { amount, interest, amortization, debt };
+    });
   }
 
   /**
@@ -96,13 +87,17 @@
   /**
    * Simula un escenario diario completo.
    * Orden diario: (1) aportaciones día 1 (periódica y puntual), (2) devengo del día,
-   * (3) abono neto (diario: cada día; mensual: día 30), (4) cuota préstamo día 30.
-   * El capital inicial y préstamo entran antes del devengo del día 1 del Mes 1.
+   * (3) abono neto (según el periodo de ingreso), (4) cuota del préstamo el último día del mes.
+   * El capital inicial y el préstamo entran antes del devengo del día 1 del mes 1.
    * @param {object} model Estado validado de la aplicación.
    * @param {'A'|'B'|'C'} caseId Escenario.
    * @param {string} productId Id de la cuenta remunerada.
    * @param {{tinPrestamo?: number}} [options] Sustituye el TIN del préstamo.
-   * @returns {object} Resultado: totales, `rows` mensuales, `points`, `ledger`, `dias` y `valido`.
+   * @returns {{months: number, saldo: number, patrimonio: number, beneficio: number,
+   *   aportacionPeriodica: number, aportacionPuntual: number, netoAbonado: number,
+   *   retencionAbonada: number, descubierto: boolean, valido: boolean,
+   *   rows: Array<{corto: string, netoAbonado: number, interesPrestamo: number}>,
+   *   points: Array<{corto: string, patrimonio: number}>, dias: Array<object>}} Resultado.
    * @throws {Error} Escenario/cuenta desconocidos o plazo inválido.
    */
   function simular(model, caseId, productId, options = {}) {
@@ -111,114 +106,55 @@
     const months = model.meses;
     if (!Number.isInteger(months) || months < 1 || months > MAX_MESES)
       throw new Error('Plazo fuera de rango.');
-    const loanTin = options.tinPrestamo == null ? model.tinPrestamo : options.tinPrestamo;
-    const loan = caseId === 'C' ? round(model.prestamo) : 0;
-    const amort = loanSchedule(loan, loanTin, months);
     if (months % Sim.utils.pasoMeses([product]) !== 0)
       throw new Error('El plazo debe ser múltiplo del periodo de la cuenta.');
-    const initial = round(model.capital + loan),
-      tin = product.tin / 100;
+    const loanTin = options.tinPrestamo == null ? model.tinPrestamo : options.tinPrestamo;
+    const loan = caseId === 'C' ? round(model.prestamo) : 0;
+    const cuotas = loanSchedule(loan, loanTin, months);
+    const tin = product.tin / 100;
     const cierre = product.calculo !== 'diario' && product.metodo === 'cierre';
     // Fin de periodo: mensual = último día de cada mes; anual = último día de cada bloque de 12 meses.
     const finPeriodo = (freq, month, day, cal) =>
       freq === 'diario' || (day === cal.dias && (freq === 'mensual' || month % MESES_ANIO === 0));
-    let saldo = initial,
-      principalPendiente = loan,
-      cuotasPagadas = 0;
-    let brutoDevengado = 0,
-      brutoAbonado = 0,
-      retencionAbonada = 0,
-      netoAbonado = 0;
-    let aportacionPeriodica = 0,
-      aportacionPuntual = 0,
-      interesPrestamo = 0;
-    let pendiente = 0,
+    let saldo = round(model.capital + loan),
+      deuda = loan,
+      pendiente = 0,
       descubierto = false;
-    // `dias`: registro diario de solo lectura (no altera el cálculo); lo consume js/core/agrupacion.js.
+    let netoAbonado = 0,
+      retencionAbonada = 0,
+      aportacionPeriodica = 0,
+      aportacionPuntual = 0;
     const rows = [],
-      ledger = [],
       dias = [],
-      cals = calendario(model, months);
-    let dia = null;
-    // B y C comparten obligatoriamente TODOS los ingresos propios.
-    // C se construye sobre B añadiendo únicamente el préstamo y sus cuotas.
-    const periodica = caseId === 'A' ? 0 : model.periodicaB;
-    const puntuales = caseId === 'A' ? {} : model.puntualesB;
-    const initialNetWorth = round(saldo - principalPendiente);
-    const points = [
-      {
-        label: 'Inicio',
-        corto: 'Inicio',
-        patrimonio: initialNetWorth,
-        saldo,
-        deuda: principalPendiente,
-      },
-    ];
-    const summaryForMonth = (month) => ({
-      mes: month,
-      label: cals[month - 1].label,
-      corto: cals[month - 1].corto,
-      inicio: saldo,
-      periodica: 0,
-      puntual: 0,
-      brutoDevengado: 0,
-      brutoAbonado: 0,
-      retencionAbonada: 0,
-      netoAbonado: 0,
-      cuota: 0,
-      interesPrestamo: 0,
-      deuda: principalPendiente,
-      saldo,
-      patrimonio: round(saldo - principalPendiente),
-    });
-    let row = summaryForMonth(1);
+      cals = calendario(model, months),
+      // B y C comparten todos los ingresos propios; C solo añade el préstamo y sus cuotas.
+      periodica = caseId === 'A' ? 0 : model.periodicaB,
+      puntuales = caseId === 'A' ? {} : model.puntualesB,
+      points = [{ corto: 'Inicio', patrimonio: round(saldo - deuda) }];
+    let row = null,
+      dia = null;
     // Cierra el resumen del mes en curso y lo añade a `rows` y al gráfico.
     const cerrarMes = () => {
-      row.deuda = principalPendiente;
-      row.saldo = saldo;
-      row.patrimonio = round(saldo - principalPendiente);
       rows.push(row);
-      points.push({
-        label: row.label,
-        corto: row.corto,
-        patrimonio: row.patrimonio,
-        saldo,
-        deuda: principalPendiente,
-      });
+      points.push({ corto: row.corto, patrimonio: round(saldo - deuda) });
     };
-    function credit(grossUnrounded, month, day) {
+    const credit = (grossUnrounded) => {
       // Redondeo del interés bruto y de la retención por liquidación efectuada.
       const gross = round(grossUnrounded),
         tax = round((gross * model.retencion) / 100),
         net = round(gross - tax);
       saldo = round(saldo + net);
-      brutoAbonado = round(brutoAbonado + gross);
       retencionAbonada = round(retencionAbonada + tax);
       netoAbonado = round(netoAbonado + net);
-      row.brutoAbonado = round(row.brutoAbonado + gross);
-      row.retencionAbonada = round(row.retencionAbonada + tax);
       row.netoAbonado = round(row.netoAbonado + net);
-      dia.bruto = gross;
-      dia.retencion = tax;
-      dia.neto = net;
-      if (gross !== 0 || tax !== 0)
-        ledger.push({
-          month,
-          day,
-          type: 'Abono de intereses',
-          gross,
-          tax,
-          net,
-          change: net,
-          balance: saldo,
-        });
-    }
+      Object.assign(dia, { bruto: gross, retencion: tax, neto: net });
+    };
     for (let month = 1; month <= months; month++)
       for (let day = 1; day <= cals[month - 1].dias; day++) {
         const cal = cals[month - 1];
-        if (month !== row.mes) {
-          cerrarMes();
-          row = summaryForMonth(month);
+        if (day === 1) {
+          if (row) cerrarMes();
+          row = { corto: cal.corto, netoAbonado: 0, interesPrestamo: 0 };
         }
         dia = {
           mes: month,
@@ -233,130 +169,80 @@
           amortizacion: 0,
         };
         // 1. Aportaciones: día 1, cuentan ya para el devengo de ese día.
-        if (day === 1 && periodica > 0) {
-          saldo = round(saldo + periodica);
+        if (day === 1) {
+          const puntual = round(Math.max(0, Number(puntuales[month]) || 0));
+          saldo = round(saldo + periodica + puntual);
           aportacionPeriodica = round(aportacionPeriodica + periodica);
-          row.periodica = round(row.periodica + periodica);
-          dia.aportes = round(dia.aportes + periodica);
-          ledger.push({
-            month,
-            day,
-            type: 'Aportación periódica',
-            change: periodica,
-            balance: saldo,
-          });
-        }
-        if (day === 1 && Number(puntuales[month]) > 0) {
-          const amount = round(Number(puntuales[month]));
-          saldo = round(saldo + amount);
-          aportacionPuntual = round(aportacionPuntual + amount);
-          row.puntual = round(row.puntual + amount);
-          dia.aportes = round(dia.aportes + amount);
-          ledger.push({ month, day, type: 'Aportación puntual', change: amount, balance: saldo });
+          aportacionPuntual = round(aportacionPuntual + puntual);
+          dia.aportes = round(periodica + puntual);
         }
         // 2-3. Saldo medio: devengo diario con el saldo del día; se abona al fin del periodo de ingreso
         // (diario: el mismo día). Con saldo a cierre no hay devengo diario: ver paso 5.
         if (!cierre) {
-          const grossDaily = (Math.max(0, saldo) * tin) / cal.base;
-          brutoDevengado += grossDaily;
-          row.brutoDevengado += grossDaily;
-          pendiente += grossDaily;
+          pendiente += (Math.max(0, saldo) * tin) / cal.base;
           if (finPeriodo(product.ingreso, month, day, cal)) {
-            credit(pendiente, month, day);
+            credit(pendiente);
             pendiente = 0;
           }
         }
-        // 4. Cuota del préstamo el día 30, después del devengo de ese día.
+        // 4. Cuota del préstamo el último día del mes, después del devengo de ese día.
         if (caseId === 'C' && day === cal.dias) {
-          const payment = amort.payments[month - 1];
-          saldo = round(saldo - payment.amount);
-          principalPendiente = payment.debt;
-          interesPrestamo = round(interesPrestamo + payment.interest);
-          cuotasPagadas = round(cuotasPagadas + payment.amount);
-          dia.cuota = payment.amount;
-          dia.interesPrestamo = payment.interest;
-          dia.amortizacion = payment.amortization;
-          row.cuota = round(row.cuota + payment.amount);
-          row.interesPrestamo = round(row.interesPrestamo + payment.interest);
-          ledger.push({
-            month,
-            day,
-            type: 'Cuota préstamo',
-            change: -payment.amount,
-            interest: payment.interest,
-            balance: saldo,
-            debt: principalPendiente,
+          const q = cuotas[month - 1];
+          saldo = round(saldo - q.amount);
+          deuda = q.debt;
+          row.interesPrestamo = round(row.interesPrestamo + q.interest);
+          Object.assign(dia, {
+            cuota: q.amount,
+            interesPrestamo: q.interest,
+            amortizacion: q.amortization,
           });
         }
         // 5. Saldo a cierre: al fin del periodo de cálculo, sobre el saldo tras aportaciones y cuota y antes de abonar.
         if (cierre) {
-          if (finPeriodo(product.calculo, month, day, cal)) {
-            const g = (Math.max(0, saldo) * tin) / (product.calculo === 'mensual' ? MESES_ANIO : 1);
-            brutoDevengado += g;
-            row.brutoDevengado += g;
-            pendiente += g;
-          }
+          if (finPeriodo(product.calculo, month, day, cal))
+            pendiente +=
+              (Math.max(0, saldo) * tin) / (product.calculo === 'mensual' ? MESES_ANIO : 1);
           if (finPeriodo(product.ingreso, month, day, cal)) {
-            credit(pendiente, month, day);
+            credit(pendiente);
             pendiente = 0;
           }
         }
-        dia.deuda = principalPendiente;
-        dia.saldo = saldo;
-        dia.pendiente = pendiente;
+        Object.assign(dia, { deuda, saldo, pendiente });
         dias.push(dia);
         if (saldo < -CERO) descubierto = true;
       }
-    for (const e of ledger) e.fecha = fechaTexto(cals[e.month - 1], e.day);
     cerrarMes();
-    const patrimonio = round(saldo - principalPendiente);
-    const contribution = round(aportacionPeriodica + aportacionPuntual);
-    // El beneficio neto no es el saldo: se resta el dinero propio aportado.
-    const beneficio = round(patrimonio - model.capital - contribution);
+    const patrimonio = round(saldo - deuda);
     return {
-      caseId,
-      productId,
       months,
-      initial,
-      loan,
       saldo,
       patrimonio,
-      beneficio,
+      // El beneficio neto no es el saldo: se resta el dinero propio aportado.
+      beneficio: round(patrimonio - model.capital - aportacionPeriodica - aportacionPuntual),
       aportacionPeriodica,
       aportacionPuntual,
-      aportaciones: contribution,
-      brutoDevengado: round(brutoDevengado),
-      brutoAbonado,
-      retencionAbonada,
       netoAbonado,
-      prestamoInteres: interesPrestamo,
-      cuotasPagadas,
-      cuotaTeorica: amort.nominal,
-      deuda: principalPendiente,
+      retencionAbonada,
       descubierto,
-      rows: rows.map((r) => ({ ...r, brutoDevengado: round(r.brutoDevengado) })),
-      points,
-      ledger,
-      dias,
       // Remuneración negativa no contemplada; una retirada que provoque descubierto invalida el resultado bancario.
-      valido: !descubierto && principalPendiente === 0,
+      valido: !descubierto && deuda === 0,
+      rows,
+      points,
+      dias,
     };
   }
   /**
    * Simula A, B y C para cada cuenta.
    * @param {object} model Estado validado de la aplicación.
-   * @returns {Object<string, {A: object, B: object, C: object, apalancamiento: number}>} Resultados por id de cuenta.
+   * @returns {Object<string, {A: object, B: object, C: object}>} Resultados por id de cuenta.
    */
   function simularTodos(model) {
-    const output = {};
-    for (const { id: productId } of model.cuentas) {
-      const A = simular(model, 'A', productId),
-        B = simular(model, 'B', productId),
-        C = simular(model, 'C', productId);
-      // B es exactamente el control sin financiación de C. No hay ingresos independientes en C.
-      output[productId] = { A, B, C, apalancamiento: round(C.patrimonio - B.patrimonio) };
-    }
-    return output;
+    return Object.fromEntries(
+      model.cuentas.map(({ id }) => [
+        id,
+        { A: simular(model, 'A', id), B: simular(model, 'B', id), C: simular(model, 'C', id) },
+      ]),
+    );
   }
   /**
    * TIN máximo del préstamo al que C iguala a B (búsqueda binaria).
@@ -384,7 +270,6 @@
     CASES,
     calendario,
     fechaTexto,
-    loanSchedule,
     simular,
     simularTodos,
     umbralFinanciacion,
