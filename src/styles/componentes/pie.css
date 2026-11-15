@@ -1,0 +1,44 @@
+@layer components {
+  .pie {
+    @apply mt-8 w-full border-t border-linea pt-5 pb-2;
+  }
+
+  .pie-titulo {
+    @apply text-[13px] font-bold text-tinta;
+  }
+
+  .pie-descripcion,
+  .pie-limitaciones {
+    @apply max-w-[900px] leading-[1.6] text-tenue;
+  }
+
+  .pie-descripcion {
+    @apply mt-[7px] mb-0 text-xs;
+  }
+
+  .pie-limitaciones {
+    @apply mt-2 mb-0 text-[11px];
+  }
+
+  .pie-base {
+    @apply mt-5 flex items-center justify-between gap-3 border-t border-linea pt-3;
+  }
+
+  .pie-marca {
+    @apply text-xs font-bold text-tinta;
+  }
+
+  .pie-leyenda {
+    @apply text-right text-[11px] text-tenue;
+  }
+
+  @media (max-width: 650px) {
+    .pie-base {
+      @apply flex-col items-start;
+    }
+
+    .pie-leyenda {
+      @apply text-left;
+    }
+  }
+}

@@ -1,0 +1,78 @@
+/* Normalización y elementos base (Tailwind preflight ya aplica el reset). */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-fondo font-sans text-tinta;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-bold;
+  }
+
+  h2 {
+    @apply m-0 text-[17px] leading-[1.3] tracking-[-0.015em];
+  }
+
+  h3 {
+    @apply m-0 text-sm;
+  }
+
+  /* El preflight de Tailwind elimina estos márgenes; los restauramos como base tipográfica. */
+  p,
+  ul {
+    margin-block: 1em;
+  }
+
+  ul ul {
+    margin-block: 0;
+  }
+
+  summary {
+    @apply font-bold;
+  }
+
+  button,
+  input,
+  select {
+    font: inherit;
+  }
+
+  button {
+    @apply cursor-pointer;
+  }
+
+  button:disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+
+  input[type='number'] {
+    @apply tabular-nums;
+    appearance: textfield;
+  }
+
+  input[type='number']::-webkit-outer-spin-button,
+  input[type='number']::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  :focus-visible {
+    outline: 3px solid #86b4ff;
+    outline-offset: 2px;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
+  dialog {
+    margin: auto;
+  }
+}

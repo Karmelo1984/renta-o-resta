@@ -1,0 +1,52 @@
+@layer components {
+  dialog.modal {
+    @apply max-h-[calc(100vh-28px)] w-[min(440px,calc(100vw-28px))] overflow-auto rounded-tarjeta border-0 bg-superficie p-[22px] text-tinta;
+    box-shadow: 0 24px 70px rgba(27, 47, 75, 0.28);
+  }
+
+  dialog.modal::backdrop {
+    background: rgba(23, 35, 58, 0.45);
+  }
+
+  .modal h2 {
+    @apply mb-1;
+  }
+
+  .modal .texto-pequeno {
+    @apply mb-4;
+  }
+
+  .modal .campo:last-of-type {
+    @apply mb-3;
+  }
+
+  .modal .segmentado {
+    @apply w-full;
+  }
+
+  .modal .segmentado button {
+    @apply flex-1;
+  }
+
+  .modal-error {
+    @apply mt-2 mb-0 min-h-[18px] text-xs text-rojo;
+  }
+
+  .modal-acciones {
+    @apply mt-1.5 flex justify-end gap-2;
+  }
+
+  @media (max-width: 550px) {
+    dialog.modal {
+      @apply p-[18px];
+    }
+
+    .modal-acciones {
+      @apply flex-col-reverse;
+    }
+
+    .modal-acciones .boton {
+      @apply w-full justify-center;
+    }
+  }
+}

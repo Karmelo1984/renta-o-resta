@@ -1,0 +1,40 @@
+@layer components {
+  /* Botón base; variantes: .boton-primario, .boton-peligro. */
+  .boton {
+    @apply inline-flex items-center gap-1.5 rounded-[10px] border border-[#d5deea] bg-white px-3 py-[9px] text-xs font-bold whitespace-nowrap text-tinta;
+    transition:
+      background 0.15s,
+      border-color 0.15s;
+  }
+
+  .boton:hover {
+    @apply border-[#bfd1e8] bg-[#edf4fc];
+  }
+
+  .boton-primario {
+    @apply border-azul bg-azul text-white;
+  }
+
+  .boton-primario:hover {
+    @apply border-azul bg-azul-oscuro;
+  }
+
+  .boton-peligro {
+    @apply text-rojo;
+  }
+
+  .boton-bloque {
+    @apply w-full justify-center;
+  }
+
+  /* Icono SVG de sprite. */
+  .icono {
+    @apply size-[15px] flex-none;
+  }
+
+  @media (max-width: 550px) {
+    .acciones-panel .boton {
+      @apply flex-1;
+    }
+  }
+}

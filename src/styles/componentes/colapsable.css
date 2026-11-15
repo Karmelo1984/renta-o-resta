@@ -1,0 +1,49 @@
+@layer components {
+  /* Botón que despliega un bloque colapsable. */
+  .boton-colapsable {
+    @apply mt-0.5 mb-2.5 w-full justify-start text-left whitespace-normal;
+  }
+
+  .boton-colapsable > span {
+    @apply min-w-0 flex-1;
+  }
+
+  .boton-colapsable .chevron {
+    transition: transform 0.25s;
+  }
+
+  .boton-colapsable[aria-expanded='true'] {
+    @apply border-[#bfd1e8] bg-azul-fondo;
+  }
+
+  .boton-colapsable[aria-expanded='true'] .chevron {
+    @apply rotate-180;
+  }
+
+  .colapsable {
+    @apply grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.25s ease;
+  }
+
+  .colapsable.open {
+    grid-template-rows: 1fr;
+  }
+
+  .colapsable-interior {
+    @apply invisible min-h-0 overflow-hidden;
+    transition: visibility 0s 0.25s;
+  }
+
+  .colapsable.open .colapsable-interior {
+    @apply visible;
+    transition-delay: 0s;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .colapsable,
+    .boton-colapsable .chevron {
+      transition: none;
+    }
+  }
+}

@@ -1,0 +1,108 @@
+@layer components {
+  .puntuales-caja {
+    @apply mb-3 rounded-xl border border-linea bg-superficie-2 p-3;
+  }
+
+  .puntuales-cabecera {
+    @apply mb-2.5 flex flex-col gap-px;
+  }
+
+  .puntuales-cabecera strong {
+    @apply text-[13px];
+  }
+
+  .puntuales-resumen {
+    @apply mb-3 grid grid-cols-2 gap-2;
+  }
+
+  .puntuales-resumen div {
+    @apply flex min-w-0 flex-col rounded-[10px] border border-linea bg-white px-2.5 py-[7px];
+  }
+
+  .puntuales-resumen span {
+    @apply text-[10px] font-extrabold text-tenue uppercase;
+  }
+
+  .puntuales-resumen b {
+    @apply text-[15px] [overflow-wrap:anywhere] tabular-nums;
+  }
+
+  .puntuales-anio {
+    @apply mb-3.5;
+  }
+
+  .puntuales-anio h3 {
+    @apply mb-[7px] flex justify-between gap-2 text-[13px];
+  }
+
+  .puntuales-total {
+    @apply font-bold text-tenue tabular-nums;
+  }
+
+  .puntuales-meses {
+    @apply grid grid-cols-6 gap-1.5;
+  }
+
+  .mes-puntual {
+    @apply flex min-h-10 min-w-0 cursor-pointer flex-col items-center gap-px rounded-[9px] border border-linea bg-[#f8fafc] px-px py-1.5 text-tenue;
+  }
+
+  .mes-puntual small {
+    @apply text-[10px] font-extrabold uppercase;
+  }
+
+  .mes-puntual b {
+    @apply max-w-full overflow-hidden text-[11px] text-ellipsis tabular-nums;
+  }
+
+  .mes-puntual.has {
+    @apply border-[#b9e0d4] bg-verde-fondo text-[#006758];
+  }
+
+  .mes-puntual.sel {
+    @apply outline-2 outline-offset-1 outline-azul;
+  }
+
+  .puntuales-subtitulo {
+    @apply mt-1 flex items-center justify-between gap-2 border-t border-linea pt-3 text-[11px] font-extrabold tracking-[0.06em] text-[#77859b] uppercase;
+  }
+
+  .puntuales-editor {
+    @apply mt-1.5 grid grid-cols-2 items-end gap-3 pt-2.5;
+  }
+
+  .puntuales-campo {
+    @apply flex min-w-0 flex-col gap-1.5;
+  }
+
+  .puntuales-campo .campo-etiqueta {
+    @apply flex items-center gap-1.5 text-tenue;
+  }
+
+  .puntuales-campo .entrada-num,
+  .puntuales-campo .selector {
+    @apply min-h-[37px] w-full;
+  }
+
+  .puntuales-sel strong {
+    @apply overflow-hidden px-2.5 text-[13px] text-ellipsis whitespace-nowrap;
+  }
+
+  .puntuales-acciones {
+    @apply col-span-full flex flex-wrap justify-end gap-2;
+  }
+
+  .puntuales-acciones .boton {
+    @apply flex-[1_1_100%] justify-center;
+  }
+
+  @media (max-width: 340px) {
+    .puntuales-editor {
+      @apply grid-cols-1;
+    }
+
+    .puntuales-meses {
+      @apply grid-cols-4;
+    }
+  }
+}

@@ -2,15 +2,21 @@
 
 Herramienta de simulación financiera que compara **tres escenarios** de ahorro en un número variable de cuentas remuneradas configurables, con aportaciones propias y un préstamo.
 
-Aplicación web estática para PC o móvil, **sin servidor, sin dependencias npm y sin servicios externos**. Mantiene HTML, CSS y JavaScript separados, con un motor financiero independiente de la interfaz.
+Aplicación web estática para PC o móvil, **sin servidor ni servicios externos** (Vite + TypeScript + Tailwind en desarrollo; el resultado es HTML, CSS y JS estáticos). El motor financiero es independiente de la interfaz.
 
-## Cómo abrirlo
+## Desarrollo y despliegue
 
-1. Descomprime `simulador-ahorro-apalancamiento-6-escenarios.zip`.
-2. Abre `simulador-ahorro-apalancamiento/index.html` en Chrome, Edge, Firefox o Safari.
-3. Modifica los importes o el plazo y consulta los resultados de cada escenario y cuenta. Las cifras se recalculan automáticamente.
+Requisitos: Node.js 22 o superior.
 
-**Nota para iPhone:** las vistas previas de Archivos pueden no ejecutar los scripts. Si necesitas utilizarlo desde Safari, publica la carpeta como sitio estático en GitHub Pages, GitLab Pages u otro alojamiento web. En PC se puede abrir directamente por `file://`.
+```sh
+npm install
+npm run dev        # servidor local con recarga automática (logger en debug)
+npm test           # pruebas (Vitest)
+npm run lint       # ESLint + TSDoc
+npm run build      # genera dist/ (logger en warn)
+```
+
+**Despliegue:** al hacer push a `main`, `.github/workflows/deploy.yml` ejecuta tipos, lint, tests y build, y publica `dist/` en GitHub Pages. Una sola vez, en el repositorio: _Settings → Pages → Source: GitHub Actions_.
 
 ## Escenarios
 
@@ -79,7 +85,7 @@ Una única tabla sustituye al antiguo «Detalle mensual» y a los «Movimientos 
 
 - **Columnas (orden fijo):** Período, Escenario, Saldo inicial, Aportes, Interés neto, Retención, Interés bruto, Cuota préstamo, Deuda pendiente, Saldo final, Patrimonio.
 - **Agrupación:** Día, Quincena (días 1–15 y 16–fin de mes), Mes (por defecto), Trimestre, Semestre y Año. Trimestres, semestres y años se cuentan desde el inicio de la simulación.
-- **Agregación:** `js/core/agrupacion.js` solo suma el registro diario `dias` que devuelve el motor; no recalcula. Flujos (aportes, intereses, retención, cuota) = suma del período; saldo inicial = saldo al empezar; deuda y saldo final = valores al cerrar.
+- **Agregación:** `AgrupadorDetalle` solo suma el registro diario `dias` que devuelve el motor; no recalcula. Flujos (aportes, intereses, retención, cuota) = suma del período; saldo inicial = saldo al empezar; deuda y saldo final = valores al cerrar.
 - **Intereses:** son los **abonados** en el período, así que sus sumas coinciden con los totales del motor. En la cuenta mensual, una agrupación inferior a un mes muestra 0 hasta el día de abono.
 - **Patrimonio:** `saldo final + interés neto devengado pendiente de abono − deuda pendiente`. Al cierre de mes (o en la cuenta diaria) no hay interés pendiente y coincide con el patrimonio del motor.
 - **Aportes:** periódicos y puntuales; el préstamo de C figura en su saldo inicial, no como aporte.
@@ -106,13 +112,13 @@ La sección **Aportaciones · B y C** del panel izquierdo reúne, por este orden
 - Resumen: meses con aportación y total dentro del plazo simulado, actualizados al instante.
 - Calendario por años con el importe en cada mes (verde = hay aportación). Al seleccionar un mes se edita su importe; un importe de 0 € elimina la aportación.
 - **Añadir por rango:** desde el mes seleccionado hasta «Aplicar hasta», cada X meses; «Sumar» acumula y «Establecer» sustituye.
-- Límites (importe por mes, botones ±, escritura, pegado) y paso de 100 € definidos en `js/config.js`.
+- Límites (importe por mes, botones ±, escritura, pegado) y paso de 100 € definidos en `src/config/Configuracion.ts`.
 - Las aportaciones puntuales se ingresan el **día 1** del mes, igual que las periódicas. No se modifica ninguna fórmula del motor.
 - La antigua sección «Aportaciones puntuales» situada bajo la tabla de detalle ya no existe.
 
 ## Confirmaciones y escenarios del detalle
 
-- **Restablecer** y **Eliminar cuenta** piden confirmación con un modal de la aplicación (`js/ui/dialogo.js`), no con el cuadro nativo del navegador. Esc, el fondo y «Cancelar» equivalen a rechazar.
+- **Restablecer** y **Eliminar cuenta** piden confirmación con un modal de la aplicación (`DialogoConfirmacion`), no con el cuadro nativo del navegador. Esc, el fondo y «Cancelar» equivalen a rechazar.
 - En **Detalle financiero comparativo** los botones A, B y C muestran u ocultan cada escenario en la tabla y en el CSV. Siempre queda al menos uno activo: el último no se puede desactivar.
 
 ## Panel contraído y cabecera
@@ -126,35 +132,28 @@ La sección **Aportaciones · B y C** del panel izquierdo reúne, por este orden
 ## Estructura del proyecto
 
 ```text
-simulador-ahorro-apalancamiento/
-├── index.html                   # Interfaz y estructura semántica
-├── css/
-│   ├── base.css                 # Tipografía, tokens de diseño, normalización
-│   ├── componentes.css          # Formulario, matriz, tarjetas, tabla, gráfico
-│   └── responsive.css           # Diseño móvil y estilos de impresión
-├── js/
-│   ├── core/
-│   │   ├── estado.js            # Valores por defecto, validación y formato
-│   │   ├── calculos.js          # Motor puro, secuencia diaria, amortización, umbrales
-│   │   └── agrupacion.js        # Agrupación temporal del detalle (suma el registro diario)
-│   ├── ui/
-│   │   ├── dialogo.js           # Confirmación en modal (sustituye a window.confirm)
-│   │   ├── colapsable.js        # Bloque plegable accesible (aria-expanded, contenido `inert` al plegar)
-│   │   ├── controles.js         # Controles, cuentas, aportaciones periódicas y puntuales
-│   │   ├── resultados.js        # Renderizado de seis resultados, detalle comparativo
-│   │   ├── lienzo.js            # Utilidades Canvas compartidas (ejes, guía, tooltip)
-│   │   ├── grafico.js           # Gráfica de patrimonio
-│   │   └── grafico-intereses.js # Gráfica de interés neto vs interés del préstamo
-│   ├── services/
-│   │   └── archivos.js          # Exportación CSV del detalle
-│   └── inicio.js                # Inicialización de módulos
-├── tests/
-│   ├── calculos.test.cjs        # Pruebas de regresión del motor financiero
-│   └── ui.test.cjs              # Pruebas de interfaz con Chrome headless (se omiten sin Chrome)
-└── README.md
+├── index.html                    # Shell: <div id="app"> + main.ts
+├── src/
+│   ├── main.ts                   # Punto de entrada
+│   ├── config/                   # CONFIG (valores y límites) y su modelo tipado
+│   ├── core/                     # CÁLCULO (sin DOM)
+│   │   ├── dto/                  # DTOs y tipos: calendario, cuenta, escenario, estado, resultado, agrupacion
+│   │   ├── calculo/              # SimuladorFinanciero, AgrupadorDetalle, calendario, plazo, préstamo
+│   │   └── log/                  # Logger (debug en dev, warn en producción)
+│   ├── ui/                       # REPRESENTACIÓN
+│   │   ├── app/                  # Aplicacion (composición) y estado
+│   │   ├── componentes/          # Plantillas reutilizables y comportamientos (colapsable, diálogo, stepper)
+│   │   ├── secciones/            # HTML de cada sección de la página
+│   │   ├── controladores/        # Eventos del formulario, cuentas, puntuales, panel y detalle
+│   │   ├── presentadores/        # Pintan resultados, detalle y franja
+│   │   └── graficos/             # Gráficos Canvas
+│   ├── services/                 # Exportación CSV y descarga
+│   └── styles/                   # Tailwind: tema, base, componentes, impresión
+├── tests/                        # Vitest, con la misma estructura que src/
+└── .github/workflows/deploy.yml  # Despliegue a GitHub Pages
 ```
 
-Los archivos JS usan el espacio compartido `window.Simulador`, mediante scripts clásicos cargados con `defer` y rutas relativas; por tanto, se ejecutan sin backend y sin bundler.
+La arquitectura, las convenciones y las reglas de calidad están en `CLAUDE.md`.
 
 ## Exportar e imprimir
 
@@ -163,15 +162,11 @@ Los archivos JS usan el espacio compartido `window.Simulador`, mediante scripts 
 
 ## Pruebas automáticas
 
-Opcionalmente, con **Node.js 18+** desde la carpeta raíz del proyecto:
-
 ```sh
-node --test tests/
+npm test
 ```
 
-`tests/ui.test.cjs` necesita Google Chrome o Chromium instalado; si no lo encuentra, se omite. Comprueba el estado plegado inicial, que plegar conserva los valores, el rango, los límites, la igualdad de aportaciones B/C, la ausencia de la sección antigua y la falta de desbordamiento horizontal a 320, 375, 768, 1024 y 1440 px.
-
-Las pruebas incluyen la consistencia de la agrupación (seis niveles × ambas cuentas × ambos calendarios), sincronización B/C, 30/360, abono mensual el día 30, devengo y reinversión diaria, aportaciones día 1, cuota del día 30, cierre tras N cuotas, retención, aportaciones y conciliación de patrimonio.
+Vitest ejecuta las pruebas del motor financiero, del logger, de la exportación CSV y de la interfaz (happy-dom). Las pruebas incluyen la consistencia de la agrupación (seis niveles × ambas cuentas × ambos calendarios), sincronización B/C, 30/360, abono mensual el día 30, devengo y reinversión diaria, aportaciones día 1, cuota del día 30, cierre tras N cuotas, retención, aportaciones y conciliación de patrimonio.
 
 ## Límites de precisión y alcance
 

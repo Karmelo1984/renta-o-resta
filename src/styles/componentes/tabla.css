@@ -1,0 +1,162 @@
+@layer components {
+  .detalle {
+    @apply p-[22px];
+  }
+
+  .detalle-cabecera {
+    @apply mb-3 flex flex-wrap items-center justify-between gap-3;
+  }
+
+  .detalle-cabecera > div {
+    @apply min-w-0;
+  }
+
+  .detalle-acciones {
+    @apply flex gap-[7px];
+  }
+
+  .tabla-scroll {
+    @apply max-h-[70vh] max-w-full overflow-auto rounded-[11px] border border-linea;
+    overscroll-behavior: contain;
+  }
+
+  /* Tabla comparativa: cabecera fija y columnas Período / Escenario fijas. */
+  .tabla-detalle {
+    --w-per: 132px;
+    @apply w-full min-w-[1260px] border-separate border-spacing-0 text-xs tabular-nums;
+  }
+
+  .tabla-detalle th {
+    @apply bg-[#f2f6fa] px-3 py-[11px] text-right leading-tight font-extrabold whitespace-nowrap text-[#59687e];
+    border-bottom: 1px solid var(--color-linea);
+  }
+
+  .tabla-detalle td {
+    @apply px-3 py-[11px] text-right whitespace-nowrap;
+    border-bottom: 1px solid #edf1f5;
+  }
+
+  .tabla-detalle th:first-child,
+  .tabla-detalle td:first-child {
+    @apply text-left;
+  }
+
+  .tabla-detalle tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .tabla-detalle tbody tr:hover {
+    @apply bg-[#f5f8fd];
+  }
+
+  .tabla-detalle tfoot {
+    @apply bg-[#eef4fa] font-extrabold;
+  }
+
+  .tabla-detalle tfoot td {
+    border-top: 1px solid var(--color-linea);
+  }
+
+  .tabla-detalle thead th {
+    @apply sticky top-0 z-[3];
+  }
+
+  .tabla-detalle thead th:first-child,
+  .tabla-detalle td.col-periodo {
+    @apply sticky left-0 z-[2];
+    width: var(--w-per);
+    min-width: var(--w-per);
+    max-width: var(--w-per);
+  }
+
+  .tabla-detalle thead th:first-child {
+    @apply z-[4];
+  }
+
+  .tabla-detalle thead th:nth-child(2) {
+    @apply sticky z-[4];
+    left: var(--w-per);
+  }
+
+  .fila-esc {
+    background: color-mix(in srgb, var(--c) 9%, #fff);
+  }
+
+  .fila-esc td {
+    border-bottom: 1px solid color-mix(in srgb, var(--c) 18%, #fff);
+  }
+
+  .tabla-detalle .fila-esc td:first-child,
+  .tabla-detalle .fila-esc td.col-periodo + td {
+    @apply text-left;
+  }
+
+  .tabla-detalle .fila-esc td.col-periodo + td,
+  .tabla-detalle .fila-esc td:first-child:not(.col-periodo) {
+    @apply sticky z-[2];
+    left: var(--w-per);
+    background: inherit;
+    box-shadow: 1px 0 0 var(--color-linea);
+  }
+
+  .tabla-detalle td.col-periodo {
+    @apply bg-superficie align-middle;
+    box-shadow: 1px 0 0 var(--color-linea);
+    border-bottom: 1px solid var(--color-linea);
+  }
+
+  .tabla-detalle td.col-periodo b,
+  .tabla-detalle td.col-periodo small {
+    @apply block;
+  }
+
+  .tabla-detalle td.col-periodo small {
+    @apply text-[11px] text-tenue;
+  }
+
+  .tabla-detalle tfoot td.col-periodo {
+    @apply bg-[#eef4fa];
+  }
+
+  .tabla-detalle tfoot .fila-esc td {
+    border-top: 0;
+  }
+
+  .badge-esc {
+    @apply inline-block min-w-6 rounded-md px-2 py-px text-center font-extrabold text-white;
+    background: var(--c);
+  }
+
+  .cero {
+    @apply text-tenue;
+  }
+
+  /* Tinte suave por contexto: remuneración (verde) y préstamo (ámbar). */
+  .tabla-detalle td.grupo-rem {
+    background-image: linear-gradient(
+      color-mix(in srgb, var(--color-remuneracion) 7%, transparent),
+      color-mix(in srgb, var(--color-remuneracion) 7%, transparent)
+    );
+  }
+
+  .tabla-detalle td.grupo-pre {
+    background-image: linear-gradient(
+      color-mix(in srgb, var(--color-prestamo) 9%, transparent),
+      color-mix(in srgb, var(--color-prestamo) 9%, transparent)
+    );
+  }
+
+  .tabla-detalle th.grupo-rem {
+    box-shadow: inset 0 3px 0 var(--color-remuneracion);
+  }
+
+  .tabla-detalle th.grupo-pre {
+    box-shadow: inset 0 3px 0 var(--color-prestamo);
+  }
+
+  @media (max-width: 550px) {
+    .detalle {
+      @apply p-4;
+    }
+  }
+}

@@ -1,0 +1,81 @@
+/* Estilos de impresión / PDF. */
+@media print {
+  body {
+    @apply bg-white;
+  }
+
+  .contenedor {
+    @apply max-w-none p-0;
+  }
+
+  .panel-config,
+  .acciones-panel,
+  .detalle-acciones,
+  .metodologia,
+  .segmentado,
+  .selectores-detalle,
+  .franja,
+  .cabecera-icono,
+  .escenarios-intro,
+  dialog.modal {
+    display: none !important;
+  }
+
+  .disposicion {
+    @apply block;
+  }
+
+  .principal {
+    @apply gap-2.5;
+  }
+
+  .tarjeta {
+    @apply shadow-none;
+    break-inside: avoid;
+  }
+
+  .grafico-caja {
+    @apply h-[250px];
+  }
+
+  .resumen {
+    @apply p-3;
+  }
+
+  .resultado-card {
+    break-inside: avoid;
+  }
+
+  .rc-principal {
+    @apply text-[17px];
+  }
+
+  .tabla-scroll {
+    @apply overflow-visible;
+  }
+
+  .cabecera {
+    @apply static;
+    margin: 0 0 10px;
+    padding: 0;
+    backdrop-filter: none;
+  }
+
+  .cabecera .sobretitulo,
+  .cabecera .subtitulo {
+    display: block !important;
+  }
+
+  .cabecera h1 {
+    @apply text-[22px] whitespace-normal;
+  }
+
+  .pie {
+    @apply mt-4 pt-2.5;
+  }
+
+  .pie > div,
+  .pie-base {
+    break-inside: avoid;
+  }
+}

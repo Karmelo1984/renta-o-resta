@@ -1,0 +1,18 @@
+/* Punto de entrada de estilos: Tailwind v4 + tokens + componentes reutilizables. */
+@import 'tailwindcss';
+@import './tema.css';
+@import './base.css';
+@import './componentes/boton.css';
+@import './componentes/formulario.css';
+@import './componentes/tarjeta.css';
+@import './componentes/colapsable.css';
+@import './componentes/modal.css';
+@import './componentes/cabecera.css';
+@import './componentes/panel.css';
+@import './componentes/cuentas.css';
+@import './componentes/puntuales.css';
+@import './componentes/resultados.css';
+@import './componentes/graficos.css';
+@import './componentes/tabla.css';
+@import './componentes/pie.css';
+@import './impresion.css';

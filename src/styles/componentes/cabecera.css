@@ -1,0 +1,124 @@
+@layer components {
+  /* Cabecera fija; con .compacta se reduce a icono + título. */
+  .cabecera {
+    @apply sticky top-0 z-30 block border-b border-transparent;
+    margin: -28px -30px 20px;
+    padding: 20px 30px 14px;
+    background: color-mix(in srgb, var(--color-fondo) 92%, transparent);
+    backdrop-filter: blur(8px);
+    transition:
+      padding 0.2s,
+      border-color 0.2s,
+      box-shadow 0.2s;
+  }
+
+  .cabecera.compacta {
+    @apply h-cabecera-compacta border-linea;
+    padding: 0 30px;
+    margin-bottom: 14px;
+    box-shadow: 0 6px 18px rgba(27, 47, 75, 0.07);
+  }
+
+  .cabecera-marca {
+    @apply flex min-w-0 items-start gap-3.5;
+  }
+
+  .cabecera.compacta .cabecera-marca {
+    @apply h-full items-center gap-[9px];
+  }
+
+  .cabecera-icono {
+    @apply inline-flex size-11 shrink-0 items-center justify-center rounded-[11px] bg-verde-fondo text-verde;
+  }
+
+  .cabecera-icono .icono {
+    @apply size-[23px];
+  }
+
+  .cabecera.compacta .cabecera-icono {
+    @apply size-7 rounded-lg;
+  }
+
+  .cabecera.compacta .cabecera-icono .icono {
+    @apply size-[17px];
+  }
+
+  .cabecera-contenido {
+    @apply min-w-0;
+  }
+
+  .cabecera.compacta .cabecera-contenido {
+    @apply flex-1;
+  }
+
+  .cabecera .sobretitulo {
+    @apply block text-[10px] font-bold tracking-[0.12em];
+  }
+
+  .cabecera h1 {
+    @apply mt-[3px] mb-[7px] font-bold tracking-[-0.04em];
+    font-size: clamp(22px, 2.5vw, 30px);
+    line-height: 1.15;
+    transition:
+      font-size 0.2s,
+      margin 0.2s;
+  }
+
+  .cabecera.compacta h1 {
+    @apply m-0 overflow-hidden text-lg text-ellipsis whitespace-nowrap;
+  }
+
+  .subtitulo {
+    @apply m-0 max-w-[820px] text-sm leading-normal text-tenue;
+  }
+
+  .cabecera.compacta .sobretitulo,
+  .cabecera.compacta .subtitulo {
+    @apply hidden;
+  }
+
+  @media (max-width: 780px) {
+    .cabecera {
+      margin: -20px -14px 14px;
+      padding: 12px 14px 10px;
+    }
+
+    .cabecera.compacta {
+      padding: 0 14px;
+    }
+
+    .cabecera-icono {
+      @apply size-[38px];
+    }
+
+    .cabecera h1 {
+      font-size: clamp(20px, 3vw, 26px);
+    }
+
+    .subtitulo {
+      @apply text-[13px];
+    }
+  }
+
+  @media (max-width: 550px) {
+    .cabecera-icono {
+      @apply size-[34px];
+    }
+
+    .cabecera h1 {
+      @apply text-xl;
+    }
+
+    .subtitulo {
+      @apply text-[12.5px];
+    }
+
+    .cabecera.compacta .cabecera-icono {
+      @apply size-7;
+    }
+
+    .cabecera.compacta h1 {
+      @apply text-base;
+    }
+  }
+}
